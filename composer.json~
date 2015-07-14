@@ -1,0 +1,23 @@
+{
+    "name": "mapbender/printclient",
+    "description": "Mapbender printclient element",
+    "keywords": ["mapbender", "PrintClient"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": ""
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mapbender\\PrintClientBundle": "src/"
+        }
+    }
+}
