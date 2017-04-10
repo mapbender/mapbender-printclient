@@ -11,8 +11,13 @@
         "php": ">=5.3.3",
 
         "arsgeografica/signing": "1.1.x",
-        "setasign/fpdi-fpdf": "1.6.*"
+        "setasign/fpdi-fpdf": "1.6.*",
 
+        "mapbender/owsproxy": "dev-release/3.0.6 as 1.2.0",
+
+        "symfony/framework-bundle" :"2.x"
+    },
+    "require-dev": {
     },
     "config": {
         "bin-dir": "bin"

@@ -4,10 +4,8 @@ namespace Mapbender\PrintBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
 use Mapbender\PrintBundle\Component\OdgParser;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Mapbender\PrintBundle\Component\PrintService;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  *
@@ -117,7 +115,7 @@ class PrintClient extends Element
      */
     public function getConfiguration()
     {
-        $config = parent::getConfiguration();
+        $config = static::getConfiguration();
         if (isset($config["templates"])) {
             $templates = array();
             foreach ($config["templates"] as $template) {
