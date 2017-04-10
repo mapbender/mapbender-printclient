@@ -4,6 +4,8 @@ namespace Mapbender\PrintBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
 use Mapbender\PrintBundle\Component\OdgParser;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Mapbender\PrintBundle\Component\PrintService;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -237,6 +239,17 @@ class PrintClient extends Element
                 $size = $odgParser->getMapSize($template);
 
                 return new Response($size);
+
+            case 'getDigitizerTemplates':
+                $featureType = $request->get('schemaName');
+                $featureTypeConfig = $this->container->getParameter('featureTypes');
+                $templates = $featureTypeConfig[$featureType]['print']['templates'];
+
+                if (!isset($templates)) {
+                    throw new \Exception('Template configuration missing');
+                }
+
+                return new JsonResponse($templates);
         }
     }
 }
