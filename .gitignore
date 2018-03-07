@@ -1,4 +1,7 @@
-# IDEA Project Files
+# .dots
 .idea/
+.php_cs.cache
+
+# misc
 vendor/
 composer.lock
