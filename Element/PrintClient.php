@@ -2,18 +2,19 @@
 
 namespace Mapbender\PrintBundle\Element;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Mapbender\CoreBundle\Component\Element;
 use Mapbender\PrintBundle\Component\OdgParser;
 use Mapbender\PrintBundle\Component\PrintService;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- *
+ * Class PrintClient
+ * @package Mapbender\PrintBundle\Element
  */
 class PrintClient extends Element
 {
-
     public static $merge_configurations = false;
+
     /**
      * @inheritdoc
      */
@@ -41,7 +42,8 @@ class PrintClient extends Element
             "mb.print.client.tag.png",
             "mb.print.client.tag.gif",
             "mb.print.client.tag.jpg",
-            "mb.print.client.tag.jpeg");
+            "mb.print.client.tag.jpeg"
+        );
     }
 
     /**
@@ -70,43 +72,52 @@ class PrintClient extends Element
     public static function getDefaultConfiguration()
     {
         return array(
-            "target" => null,
-            "templates" => array(
+            "target"                   => null,
+            "templates"                => array(
                 array(
                     'template' => "a4portrait",
-                    "label" => "A4 Portrait")
-                ,
+                    "label"    => "A4 Portrait"
+                )
+            ,
                 array(
                     'template' => "a4landscape",
-                    "label" => "A4 Landscape")
-                ,
+                    "label"    => "A4 Landscape"
+                )
+            ,
                 array(
                     'template' => "a3portrait",
-                    "label" => "A3 Portrait")
-                ,
+                    "label"    => "A3 Portrait"
+                )
+            ,
                 array(
                     'template' => "a3landscape",
-                    "label" => "A3 Landscape")
-                ,
+                    "label"    => "A3 Landscape"
+                )
+            ,
                 array(
                     'template' => "a4_landscape_offical",
-                    "label" => "A4 Landscape offical"),
+                    "label"    => "A4 Landscape offical"
+                ),
                 array(
                     'template' => "a2_landscape_offical",
-                    "label" => "A2 Landscape offical")
+                    "label"    => "A2 Landscape offical"
+                )
             ),
-            "scales" => array(500, 1000, 5000, 10000, 25000),
-            "quality_levels" => array(array('dpi' => "72", 'label' => "Draft (72dpi)"),
-                array('dpi' => "288", 'label' => "Document (288dpi)")),
-            "rotatable" => true,
-            "legend" => true,
+            "scales"                   => array(500, 1000, 5000, 10000, 25000),
+            "quality_levels"           => array(
+                array('dpi' => "72", 'label' => "Draft (72dpi)"),
+                array('dpi' => "288", 'label' => "Document (288dpi)")
+            ),
+            "rotatable"                => true,
+            "legend"                   => true,
             "legend_default_behaviour" => true,
-            "optional_fields" => array(
-                "title" => array("label" => 'Title', "options" => array("required" => false)),
+            "optional_fields"          => array(
+                "title"    => array("label" => 'Title', "options" => array("required" => false)),
                 "comment1" => array("label" => 'Comment 1', "options" => array("required" => false)),
-                "comment2" => array("label" => 'Comment 2', "options" => array("required" => false))),
-            "replace_pattern" => null,
-            "file_prefix" => 'mapbender3'
+                "comment2" => array("label" => 'Comment 2', "options" => array("required" => false))
+            ),
+            "replace_pattern"          => null,
+            "file_prefix"              => 'mapbender3'
         );
     }
 
@@ -168,8 +179,8 @@ class PrintClient extends Element
         return $this->container->get('templating')->render(
             'MapbenderPrintBundle:Element:printclient.html.twig',
             array(
-                'id' => $this->getId(),
-                'title' => $this->getTitle(),
+                'id'            => $this->getId(),
+                'title'         => $this->getTitle(),
                 'configuration' => $this->getConfiguration()
             )
         );
@@ -184,7 +195,6 @@ class PrintClient extends Element
         $configuration = $this->getConfiguration();
         switch ($action) {
             case 'print':
-
                 $data = $request->request->all();
 
                 foreach ($data['layers'] as $idx => $layer) {
@@ -221,11 +231,11 @@ class PrintClient extends Element
 
                 $displayInline = true;
                 $filename = 'mapbender_print.pdf';
-                if(array_key_exists('file_prefix', $configuration)) {
+                if (array_key_exists('file_prefix', $configuration)) {
                     $filename = $configuration['file_prefix'] . '_' . date("YmdHis") . '.pdf';
                 }
                 $response = new Response($printservice->doPrint($data), 200, array(
-                    'Content-Type' => $displayInline ? 'application/pdf' : 'application/octet-stream',
+                    'Content-Type'        => $displayInline ? 'application/pdf' : 'application/octet-stream',
                     'Content-Disposition' => 'attachment; filename=' . $filename
                 ));
 

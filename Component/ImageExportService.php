@@ -1,4 +1,5 @@
 <?php
+
 namespace Mapbender\PrintBundle\Component;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -31,8 +32,8 @@ class ImageExportService
             $this->requests[$i] = $layer['url'];
         }
 
-        if(isset($this->data['vectorLayers'])){
-            foreach ($this->data['vectorLayers'] as $idx => $layer){
+        if (isset($this->data['vectorLayers'])) {
+            foreach ($this->data['vectorLayers'] as $idx => $layer) {
                 $this->data['vectorLayers'][$idx] = json_decode($this->data['vectorLayers'][$idx], true);
             }
         }
@@ -44,20 +45,19 @@ class ImageExportService
     {
         $temp_names = array();
         foreach ($this->requests as $k => $url) {
-            
             $url = strstr($url, '&WIDTH', true);
             $width = '&WIDTH=' . $this->data['width'];
             $height = '&HEIGHT=' . $this->data['height'];
             $url .= $width . $height;
-            
+
             $this->container->get("logger")->debug("Image Export Request Nr.: " . $k . ' ' . $url);
 
-            $parsed   = parse_url($url);
+            $parsed = parse_url($url);
             $hostpath = $parsed['host'] . $parsed['path'];
-            $pos      = strpos($hostpath, $this->urlHostPath);
+            $pos = strpos($hostpath, $this->urlHostPath);
             if ($pos === 0 && ($routeStr = substr($hostpath, strlen($this->urlHostPath))) !== false) {
                 $attributes = $this->container->get('router')->match($routeStr);
-                $gets       = array();
+                $gets = array();
                 parse_str($parsed['query'], $gets);
                 $subRequest = new Request($gets, array(), $attributes, array(), array(), array(), '');
             } else {
@@ -74,19 +74,19 @@ class ImageExportService
             file_put_contents($imagename, $response->getContent());
             $rawImage = null;
             switch (trim($response->headers->get('content-type'))) {
-                case 'image/png' :
+                case 'image/png':
                     $rawImage = imagecreatefrompng($imagename);
                     break;
-                case 'image/png8' :
+                case 'image/png8':
                     $rawImage = imagecreatefrompng($imagename);
                     break;
-                case 'image/png; mode=24bit' :
+                case 'image/png; mode=24bit':
                     $rawImage = imagecreatefrompng($imagename);
                     break;
-                case 'image/jpeg' :
+                case 'image/jpeg':
                     $rawImage = imagecreatefromjpeg($imagename);
                     break;
-                case 'image/gif' :
+                case 'image/gif':
                     $rawImage = imagecreatefromgif($imagename);
                     break;
                 default:
@@ -107,7 +107,7 @@ class ImageExportService
 
                 // Taking the painful way to alpha blending. Stupid PHP-GD
                 $opacity = floatVal($this->data['requests'][$k]['opacity']);
-                if(1.0 !== $opacity) {
+                if (1.0 !== $opacity) {
                     for ($x = 0; $x < $width; $x++) {
                         for ($y = 0; $y < $height; $y++) {
                             $colorIn = imagecolorsforindex($image, imagecolorat($image, $x, $y));
@@ -118,7 +118,8 @@ class ImageExportService
                                 $colorIn['red'],
                                 $colorIn['green'],
                                 $colorIn['blue'],
-                                $alphaOut);
+                                $alphaOut
+                            );
                             imagesetpixel($image, $x, $y, $colorOut);
                             imagecolordeallocate($image, $colorOut);
                         }
@@ -171,11 +172,11 @@ class ImageExportService
         imagesavealpha($image, true);
         imagealphablending($image, true);
 
-        foreach($this->data['vectorLayers'] as $idx => $layer) {
-            foreach($layer['geometries'] as $geometry) {
+        foreach ($this->data['vectorLayers'] as $idx => $layer) {
+            foreach ($layer['geometries'] as $geometry) {
                 $renderMethodName = 'draw' . $geometry['type'];
 
-                if(!method_exists($this, $renderMethodName)) {
+                if (!method_exists($this, $renderMethodName)) {
                     continue;
                     //throw new \RuntimeException('Can not draw geometries of type "' . $geometry['type'] . '".');
                 }
@@ -190,7 +191,7 @@ class ImageExportService
     {
         list($r, $g, $b) = CSSColorParser::parse($color);
 
-        if(0 == $alpha) {
+        if (0 == $alpha) {
             return ImageColorAllocate($image, $r, $g, $b);
         } else {
             $a = (1 - $alpha) * 127.0;
@@ -200,31 +201,33 @@ class ImageExportService
 
     private function drawPolygon($geometry, $image)
     {
-        foreach($geometry['coordinates'] as $ring) {
-            if(count($ring) < 3) {
+        foreach ($geometry['coordinates'] as $ring) {
+            if (count($ring) < 3) {
                 continue;
             }
 
             $points = array();
-            foreach($ring as $c) {
+            foreach ($ring as $c) {
                 $p = $this->realWorld2mapPos($c[0], $c[1]);
                 $points[] = floatval($p[0]);
                 $points[] = floatval($p[1]);
             }
             imagesetthickness($image, 0);
             // Filled area
-            if($geometry['style']['fillOpacity'] > 0){
+            if ($geometry['style']['fillOpacity'] > 0) {
                 $color = $this->getColor(
                     $geometry['style']['fillColor'],
                     $geometry['style']['fillOpacity'],
-                    $image);
+                    $image
+                );
                 imagefilledpolygon($image, $points, count($ring), $color);
             }
             // Border
             $color = $this->getColor(
                 $geometry['style']['strokeColor'],
                 $geometry['style']['strokeOpacity'],
-                $image);
+                $image
+            );
             imagesetthickness($image, $geometry['style']['strokeWidth']);
             imagepolygon($image, $points, count($ring), $color);
         }
@@ -232,31 +235,33 @@ class ImageExportService
 
     private function drawMultiPolygon($geometry, $image)
     {
-        foreach($geometry['coordinates'][0] as $ring) {
-            if(count($ring) < 3) {
+        foreach ($geometry['coordinates'][0] as $ring) {
+            if (count($ring) < 3) {
                 continue;
             }
 
             $points = array();
-            foreach($ring as $c) {
+            foreach ($ring as $c) {
                 $p = $this->realWorld2mapPos($c[0], $c[1]);
                 $points[] = floatval($p[0]);
                 $points[] = floatval($p[1]);
             }
             imagesetthickness($image, 0);
             // Filled area
-            if($geometry['style']['fillOpacity'] > 0){
+            if ($geometry['style']['fillOpacity'] > 0) {
                 $color = $this->getColor(
                     $geometry['style']['fillColor'],
                     $geometry['style']['fillOpacity'],
-                    $image);
+                    $image
+                );
                 imagefilledpolygon($image, $points, count($ring), $color);
             }
             // Border
             $color = $this->getColor(
                 $geometry['style']['strokeColor'],
                 $geometry['style']['strokeOpacity'],
-                $image);
+                $image
+            );
             imagesetthickness($image, $geometry['style']['strokeWidth']);
             imagepolygon($image, $points, count($ring), $color);
         }
@@ -267,17 +272,19 @@ class ImageExportService
         $color = $this->getColor(
             $geometry['style']['strokeColor'],
             $geometry['style']['strokeOpacity'],
-            $image);
+            $image
+        );
         imagesetthickness($image, $geometry['style']['strokeWidth']);
 
-        for($i = 1; $i < count($geometry['coordinates']); $i++) {
-
+        for ($i = 1; $i < count($geometry['coordinates']); $i++) {
             $from = $this->realWorld2mapPos(
                 $geometry['coordinates'][$i - 1][0],
-                $geometry['coordinates'][$i - 1][1]);
+                $geometry['coordinates'][$i - 1][1]
+            );
             $to = $this->realWorld2mapPos(
                 $geometry['coordinates'][$i][0],
-                $geometry['coordinates'][$i][1]);
+                $geometry['coordinates'][$i][1]
+            );
 
             imageline($image, $from[0], $from[1], $to[0], $to[1], $color);
         }
@@ -289,38 +296,40 @@ class ImageExportService
 
         $p = $this->realWorld2mapPos($c[0], $c[1]);
 
-        if(isset($geometry['style']['label'])){
+        if (isset($geometry['style']['label'])) {
             // draw label with white halo
             $color = $this->getColor('#ff0000', 1, $image);
             $bgcolor = $this->getColor('#ffffff', 1, $image);
             $fontPath = $this->container->getParameter('kernel.root_dir') . '/Resources/MapbenderPrintBundle/fonts/';
             $font = $fontPath . 'OpenSans-Bold.ttf';
-            imagettftext($image, 14, 0, $p[0], $p[1]+1, $bgcolor, $font, $geometry['style']['label']);
-            imagettftext($image, 14, 0, $p[0], $p[1]-1, $bgcolor, $font, $geometry['style']['label']);
-            imagettftext($image, 14, 0, $p[0]-1, $p[1], $bgcolor, $font, $geometry['style']['label']);
-            imagettftext($image, 14, 0, $p[0]+1, $p[1], $bgcolor, $font, $geometry['style']['label']);
+            imagettftext($image, 14, 0, $p[0], $p[1] + 1, $bgcolor, $font, $geometry['style']['label']);
+            imagettftext($image, 14, 0, $p[0], $p[1] - 1, $bgcolor, $font, $geometry['style']['label']);
+            imagettftext($image, 14, 0, $p[0] - 1, $p[1], $bgcolor, $font, $geometry['style']['label']);
+            imagettftext($image, 14, 0, $p[0] + 1, $p[1], $bgcolor, $font, $geometry['style']['label']);
             imagettftext($image, 14, 0, $p[0], $p[1], $color, $font, $geometry['style']['label']);
             return;
         }
 
         $radius = $geometry['style']['pointRadius'];
         // Filled circle
-        if($geometry['style']['fillOpacity'] > 0){
+        if ($geometry['style']['fillOpacity'] > 0) {
             $color = $this->getColor(
                 $geometry['style']['fillColor'],
                 $geometry['style']['fillOpacity'],
-                $image);
-            imagefilledellipse($image, $p[0], $p[1], 2*$radius, 2*$radius, $color);
+                $image
+            );
+            imagefilledellipse($image, $p[0], $p[1], 2 * $radius, 2 * $radius, $color);
         }
         // Circle border
         $color = $this->getColor(
             $geometry['style']['strokeColor'],
             $geometry['style']['strokeOpacity'],
-            $image);
-        imageellipse($image, $p[0], $p[1], 2*$radius, 2*$radius, $color);
+            $image
+        );
+        imageellipse($image, $p[0], $p[1], 2 * $radius, 2 * $radius, $color);
     }
 
-    private function realWorld2mapPos($rw_x,$rw_y)
+    private function realWorld2mapPos($rw_x, $rw_y)
     {
         $quality = 72;
         $map_width = $this->data['extentwidth'];
@@ -336,14 +345,14 @@ class ImageExportService
         $maxX = $centerx + $map_width * 0.5;
         $maxY = $centery + $map_height * 0.5;
 
-        $extentx = $maxX - $minX ;
-	$extenty = $maxY - $minY ;
+        $extentx = $maxX - $minX;
+        $extenty = $maxY - $minY;
 
-        $pixPos_x = (($rw_x - $minX)/$extentx) * $width;
-	$pixPos_y = (($maxY - $rw_y)/$extenty) * $height;
+        $pixPos_x = (($rw_x - $minX) / $extentx) * $width;
+        $pixPos_y = (($maxY - $rw_y) / $extenty) * $height;
 
         $pixPos = array($pixPos_x, $pixPos_y);
 
-	return $pixPos;
+        return $pixPos;
     }
 }

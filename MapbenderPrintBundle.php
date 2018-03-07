@@ -1,4 +1,5 @@
 <?php
+
 namespace Mapbender\PrintBundle;
 
 use Mapbender\CoreBundle\Component\MapbenderBundle;
@@ -18,8 +19,6 @@ class MapbenderPrintBundle extends MapbenderBundle
         return array(
             'Mapbender\PrintBundle\Element\PrintClient',
             'Mapbender\PrintBundle\Element\ImageExport'
-            );
+        );
     }
-
 }
-

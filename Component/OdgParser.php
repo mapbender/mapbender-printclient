@@ -1,4 +1,5 @@
 <?php
+
 namespace Mapbender\PrintBundle\Component;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -26,7 +27,7 @@ class OdgParser
         $resource_dir = $this->container->getParameter('kernel.root_dir') . '/Resources/MapbenderPrintBundle';
         $odgfile = $resource_dir . '/templates/' . $template . '.odg';
 
-        if(!is_file($odgfile)){
+        if (!is_file($odgfile)) {
             throw new Exception("Print template '$template' doesn't exists.");
         }
 
@@ -113,21 +114,21 @@ class OdgParser
             if ($name == '') {
                 continue;
             }
-            $width  = $node->getAttribute('svg:width');
+            $width = $node->getAttribute('svg:width');
             $height = $node->getAttribute('svg:height');
-            $x      = $node->getAttribute('svg:x');
-            $y      = $node->getAttribute('svg:y');
-            $field  = array(
-                'font'     => 'Arial',
-                'width'    => substr($width, 0, -2) * 10,
-                'height'   => substr($height, 0, -2) * 10,
-                'x'        => substr($x, 0, -2) * 10,
-                'y'        => substr($y, 0, -2) * 10,
+            $x = $node->getAttribute('svg:x');
+            $y = $node->getAttribute('svg:y');
+            $field = array(
+                'font'   => 'Arial',
+                'width'  => substr($width, 0, -2) * 10,
+                'height' => substr($height, 0, -2) * 10,
+                'x'      => substr($x, 0, -2) * 10,
+                'y'      => substr($y, 0, -2) * 10,
             );
 
             // Recognize font name and size
             $textParagraph = $xpath->query("draw:text-box/text:p", $node)->item(0);
-            $textNode      = $xpath->query("draw:text-box/text:p/text:span", $node)->item(0);
+            $textNode = $xpath->query("draw:text-box/text:p/text:span", $node)->item(0);
             if ($textNode) {
                 $style = $textNode->getAttribute('text:style-name');
             } elseif ($textParagraph) {
@@ -140,7 +141,7 @@ class OdgParser
             }
             $field['fontsize'] = $fontsize != '' ? $fontsize : '10pt';
             $field['color'] = $color != '' ? $color : '#000000';
-            $data['fields'][ $name ] = $field;
+            $data['fields'][$name] = $field;
         }
         return $data;
     }
