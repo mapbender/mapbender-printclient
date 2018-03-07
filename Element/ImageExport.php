@@ -3,10 +3,11 @@
 namespace Mapbender\PrintBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
-use Mapbender\PrintBundle\Component\ImageExportService;;
+use Mapbender\PrintBundle\Component\ImageExportService;
 
 /**
- *
+ * Class ImageExport
+ * @package Mapbender\PrintBundle\Element
  */
 class ImageExport extends Element
 {
@@ -14,7 +15,7 @@ class ImageExport extends Element
     /**
      * @inheritdoc
      */
-    static public function getClassTitle()
+    public static function getClassTitle()
     {
         return "mb.print.imageexport.class.title";
     }
@@ -22,7 +23,7 @@ class ImageExport extends Element
     /**
      * @inheritdoc
      */
-    static public function getClassDescription()
+    public static function getClassDescription()
     {
         return "mb.print.imageexport.class.description";
     }
@@ -30,13 +31,14 @@ class ImageExport extends Element
     /**
      * @inheritdoc
      */
-    static public function getTags()
+    public static function getTags()
     {
         return array(
             "mb.print.imageexport.tag.image",
             "mb.print.imageexport.tag.export",
             "mb.print.imageexport.tag.jpeg",
-            "mb.print.imageexport.tag.png");
+            "mb.print.imageexport.tag.png"
+        );
     }
 
     /**
@@ -50,14 +52,19 @@ class ImageExport extends Element
     /**
      * @inheritdoc
      */
-    static public function listAssets()
+    public static function listAssets()
     {
-        return array('js' => array('mapbender.element.imageExport.js',
+        return array(
+            'js'    => array(
+                'mapbender.element.imageExport.js',
                 '@FOMCoreBundle/Resources/public/js/widgets/popup.js',
-                '@FOMCoreBundle/Resources/public/js/widgets/dropdown.js'),
-            'css' => array(
-                'sass/element/imageexport.scss'),
-            'trans' => array('MapbenderPrintBundle:Element:imageexport.json.twig'));
+                '@FOMCoreBundle/Resources/public/js/widgets/dropdown.js'
+            ),
+            'css'   => array(
+                'sass/element/imageexport.scss'
+            ),
+            'trans' => array('MapbenderPrintBundle:Element:imageexport.json.twig')
+        );
     }
 
     /**
@@ -75,8 +82,7 @@ class ImageExport extends Element
      */
     public function getConfiguration()
     {
-        $config = parent::getConfiguration();
-        return $config;
+        return parent::getConfiguration();
     }
 
     /**
@@ -101,11 +107,11 @@ class ImageExport extends Element
     public function render()
     {
         return $this->container->get('templating')
-                ->render('MapbenderPrintBundle:Element:imageexport.html.twig', array(
-                    'id' => $this->getId(),
-                    'title' => $this->getTitle(),
-                    'configuration' => $this->getConfiguration()
-        ));
+            ->render('MapbenderPrintBundle:Element:imageexport.html.twig', array(
+                'id'            => $this->getId(),
+                'title'         => $this->getTitle(),
+                'configuration' => $this->getConfiguration()
+            ));
     }
 
     /**
@@ -114,7 +120,6 @@ class ImageExport extends Element
     public function httpAction($action)
     {
         switch ($action) {
-
             case 'export':
                 $request = $this->container->get('request');
                 $data = $request->get('data');
@@ -122,5 +127,4 @@ class ImageExport extends Element
                 $exportservice->export($data);
         }
     }
-
 }
